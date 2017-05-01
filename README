@@ -1,3 +1,5 @@
 A Python 2.7 command-line program.
 
-Asks for a bulbapedia page url that links to a page containing a card set.  It will then take the card list and write it to an SQL .db file.
+Asks for a bulbapedia page url that links to a page containing a card set.
+
+TODO: save data to sql table in specified pyodbc connection and create table if it doesn't exist
