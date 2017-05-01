@@ -5,17 +5,19 @@ description:
 A tool to gather information about Pokemon card sets from
 Bulbapedia and export them into an SQL database file
 """
-import sqlite3, nltk, sys, re
-from urllib import urlopen
+import sqlite3, re
 from bs4 import BeautifulSoup
+import cfscrape
 
 
 #ask user for page to get data from
 address = raw_input("Enter the URL from which to get the card data> ")
-html = urlopen(address).read()
+scraper = cfscrape.create_scraper()
+html = scraper.get(address).content
 #html = html[html.index('<h2><span class="mw-headline" id="Card_lists">Card lists</span></h2>'):]
 
-soup = BeautifulSoup(html)
+soup = BeautifulSoup(html, "html.parser")
+# print soup.prettify()
 
 # get title of set
 title = re.match(r'^[a-zA-z0-9 ]+', soup.title.string).group(0)
@@ -25,7 +27,9 @@ print "\n\n"
 print "Set: " + title
 print "---------------------------------------------------------"
 
-table = soup.find("table", attrs={"width":"100%"})
+table = soup.find("td", attrs={'style':'text-align:left; vertical-align:top;',
+                               'width':'50%'})
+table = table.find("table", attrs={"width":"100%"})
 
 headings = [th.get_text() for th in table.find("tr").find_all("th")]
 headings = [heading.strip() for heading in headings[:]]
@@ -45,13 +49,13 @@ datasets = [row for row in datasets[:] if len(row) == 5]
 for row in datasets:
     print "{0}\t{1}\t{2}\t{3}\t{4}".format(row[0][1].strip(), row[1][1], row[2][1], row[3][1], row[4][1])
 
-tabletitle = title.replace(' ', '_')
-con = sqlite3.connect('pkmncards.db')
-with con:
-    cur = con.cursor()
-    command = "CREATE TABLE {}(No TEXT, Name TEXT)".format(tabletitle)
-    cur.execute(command)
-    for row in datasets:
-        command2 = "INSERT INTO {0} VALUES('{1}', '{2}')".format(tabletitle, row[0][1].strip(), row[2][1].strip().replace("'","").replace(' ', '_'))
-        print command2
-        cur.execute(command2)
+# tabletitle = title.replace(' ', '_')
+# con = sqlite3.connect('pkmncards.db')
+# with con:
+#     cur = con.cursor()
+#     command = "CREATE TABLE {}(No TEXT, Name TEXT)".format(tabletitle)
+#     cur.execute(command)
+#     for row in datasets:
+#         command2 = "INSERT INTO {0} VALUES('{1}', '{2}')".format(tabletitle, row[0][1].strip(), row[2][1].strip().replace("'","").replace(' ', '_'))
+#         print command2
+#         cur.execute(command2)
