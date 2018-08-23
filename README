@@ -1,5 +1,5 @@
-A Python 2.7 command-line program.
+A Python 2.7 command-line web scraper.
 
-Asks for a bulbapedia page url that links to a page containing a card set.
+Asks for a bulbapedia page url that links to a page containing a card set and then scrapes the table containing the card data, saving the data in a sql database.
 
 TODO: save data to sql table in specified pyodbc connection and create table if it doesn't exist
